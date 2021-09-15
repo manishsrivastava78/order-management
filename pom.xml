@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.tcs.eas.apis</groupId>
 	<artifactId>order-management-system</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>order-management-system</name>
 	<description>order-management-system</description>
 	<properties>
