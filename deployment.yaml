@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oms
+  namespace: jenkins
+  labels:
+    app: oms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oms
+  template:
+    metadata:
+      labels:
+        app: oms
+    spec:
+      containers:
+      - name: oms
+        image: manishsrivastavaggn/oms:changeMePlease
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
