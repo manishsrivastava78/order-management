@@ -1,0 +1,41 @@
+<configuration>
+	<appender name="jsonConsoleAppender"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder
+			class="net.logstash.logback.encoder.LogstashAccessEncoder">
+			<fieldNames>
+				<requestHeaders>request_headers</requestHeaders>
+				<responseHeaders>response_headers</responseHeaders>
+			</fieldNames>
+		</encoder>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<includeContext>false</includeContext>
+			<includeCallerData>true</includeCallerData>
+			<fieldNames>
+				<timestamp>timestamp</timestamp>
+				<message>message</message>
+				<thread>[ignore]</thread>
+				<logger>[ignore]</logger>
+				<version>[ignore]</version>
+				<levelValue>[ignore]</levelValue>
+				<caller>trace</caller>
+				<stackTrace>exception</stackTrace>
+				<mdc>context</mdc>
+			</fieldNames>
+			<customFields>{"appname":"myWebservice"}</customFields>
+			<jsonGeneratorDecorator
+				class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+				<defaultMask>**********</defaultMask>
+				<path>authorSsn</path>
+			</jsonGeneratorDecorator>
+			<provider
+				class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">
+				<!-- <pattern> { "message": "%replace(%msg){'Processing','**********','call','+++++'}" 
+					} </pattern> -->
+			</provider>
+		</encoder>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="jsonConsoleAppender" />
+	</root>
+</configuration>
