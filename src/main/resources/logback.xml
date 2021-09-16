@@ -22,11 +22,12 @@
 				<stackTrace>exception</stackTrace>
 				<mdc>context</mdc>
 			</fieldNames>
-			<customFields>{"appname":"myWebservice"}</customFields>
+			<customFields>{"appname":"oms"}</customFields>
 			<jsonGeneratorDecorator
 				class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
 				<defaultMask>**********</defaultMask>
-				<path>authorSsn</path>
+				<path>mobile</path>
+				<path>email</path>
 			</jsonGeneratorDecorator>
 			<provider
 				class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">

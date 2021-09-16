@@ -52,13 +52,16 @@ public class CustomerController {
 		//loggingService.writeProcessLog("POST","Customer","createCustomer",customer);
 		//loggingService.clearMDC();
 		//CustomerEntity ce = test();
+		loggingService.writeProcessLog("POST", "customers", "createCustomer", customer);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{customerid}").buildAndExpand(savedCustomer.getCustomerid()).toUri();
 		return ResponseEntity.created(location).build();
 	}
 	
 	@GetMapping("/customers")
 	public ResponseEntity<List<Customer>> getCustomers(@RequestHeader Map<String, String> headers) {
-		return  ResponseEntity.ok().body(customerDaoService.findAll());
+		List<Customer> customers = customerDaoService.findAll();
+		loggingService.writeProcessLog("GET", "customers", "getCustomer", customers);
+		return  ResponseEntity.ok().body(customers);
 	}
 	
 	@GetMapping("/customers/{customerid}")
@@ -67,6 +70,7 @@ public class CustomerController {
 		if(cust == null) {
 			throw new CustomerNotFound("Customer id="+customerid);
 		}
+		loggingService.writeProcessLog("GET", "customers", "getCustomer by id", cust);
 		return cust;
 	}
 	
