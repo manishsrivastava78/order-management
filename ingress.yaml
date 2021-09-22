@@ -2,19 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: oms-ingress
-  namespace: jenkins
+  namespace: app
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: oms.tcs.eas.com
+    - host: "*.com"
       http:
         paths:
-          - path: /oms
-            pathType: Exact 
+          - path: /
+            pathType: Prefix 
             backend:
               service:
                 name: oms-svc
                 port: 
-                  number: 80
-        
+                  number: 8080
