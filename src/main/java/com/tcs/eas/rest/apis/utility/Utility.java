@@ -6,16 +6,18 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpHeaders;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tcs.eas.rest.apis.model.Customer;
+import com.tcs.eas.rest.apis.Constants;
 
 /**
  * 
  * @author 44745
  *
  */
-public class Utility {
+public class Utility  implements Constants{
 	/**
 	 * 
 	 * @param object
@@ -58,6 +60,24 @@ public class Utility {
 			}
 		}
 		return remoteAddr;
+	}
+	
+	/**
+	 * 
+	 * @param headers
+	 * @return
+	 */
+	public static HttpHeaders getCustomResponseHeaders(Map<String, String> headers) {
+		// setting required response headers
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(TRANSACTION_ID,
+				headers.get(TRANSACTION_ID) == null ? NO_TRANSATION_ID : headers.get(TRANSACTION_ID));
+		String correlationId = headers.get(CORRELATION_ID);
+		if (correlationId != null) {
+			responseHeaders.set(CORRELATION_ID, correlationId);
+		}
+
+		return responseHeaders;
 	}
 	
 }

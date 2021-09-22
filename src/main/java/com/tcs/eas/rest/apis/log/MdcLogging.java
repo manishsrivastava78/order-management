@@ -3,11 +3,11 @@ package com.tcs.eas.rest.apis.log;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tcs.eas.rest.apis.Constants;
 
 /**
  * 

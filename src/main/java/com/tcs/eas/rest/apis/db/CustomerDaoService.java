@@ -1,6 +1,7 @@
 package com.tcs.eas.rest.apis.db;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,11 @@ public class CustomerDaoService {
 	 * @return
 	 */
 	public Customer getCustomerById(Integer id) {
-		Customer c = customerRepository.findById(id).get();
-		return c;
+		Optional<Customer> optional = customerRepository.findById(id);
+		if(optional.isPresent())
+			return  optional.get();
+		else {
+			return null;
+		}
 	}
 }

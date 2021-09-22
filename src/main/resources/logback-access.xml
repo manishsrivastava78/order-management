@@ -4,7 +4,7 @@
 
   <appender name="logstash-access" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder">
-            <customFields>{"appname":"myWebservice"}</customFields>
+            <customFields>{"appname":"oms"}</customFields>
             <fieldNames>
                 <fieldsRequestHeaders>@fields.request_headers</fieldsRequestHeaders>
                 <fieldsResponseHeaders>@fields.response_headers</fieldsResponseHeaders>

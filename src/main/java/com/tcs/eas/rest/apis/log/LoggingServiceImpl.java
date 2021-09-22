@@ -36,9 +36,13 @@ public class LoggingServiceImpl extends MdcLogging implements LoggingService {
 	@Override
 	public void logRequest(HttpServletRequest request, Object body) {
 		Map<String, String> map = new HashMap<>();
-		UUID uuid = UUID.randomUUID();
-		String correlationID = uuid.toString();
-		map.put(CORRELATION_ID, correlationID);
+		//UUID uuid = UUID.randomUUID();
+		//String correlationID = uuid.toString();
+		String transationId = request.getHeader(TRANSACTION_ID);
+		if(transationId == null) {
+			transationId = NO_TRANSATION_ID;
+		}
+		map.put(TRANSACTION_ID, transationId);
 		map.put(HTTP_METHOD, request.getMethod());
 		map.put(REQUEST_URI, request.getRequestURI());
 		map.put(HTTP_PROTOCOL, request.getProtocol());
@@ -48,7 +52,7 @@ public class LoggingServiceImpl extends MdcLogging implements LoggingService {
 		setMDC(map);
 		LOGGER.info("Request details", StructuredArguments.entries(httpHeadersMap));
 		clearMDC();
-		MDC.put(CORRELATION_ID, correlationID);
+		MDC.put(TRANSACTION_ID, transationId);
 	}
 
 	@Override
@@ -95,7 +99,7 @@ public class LoggingServiceImpl extends MdcLogging implements LoggingService {
 
 	public void writeProcessLog(String httpMethod, String serviceName, String serviceMethod, Object object) {
 		Map<String, String> map = new HashMap<>();
-		map.put(CORRELATION_ID, MDC.get(CORRELATION_ID));
+		map.put(TRANSACTION_ID, MDC.get(TRANSACTION_ID));
 		map.put(HTTP_METHOD, httpMethod);
 		map.put(SERVICE_NAME, serviceName);
 		map.put(SERVICE_METHOD, serviceMethod);
@@ -113,38 +117,6 @@ public class LoggingServiceImpl extends MdcLogging implements LoggingService {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		LoggingServiceImpl ls = new LoggingServiceImpl();
-		/*
-		 * List<Test> list = new ArrayList<>(); Test t = new Test("dsad", "dasd");
-		 * list.add(t); t = new Test("ddsadsad", "dasd"); list.add(t);
-		 * 
-		 * ObjectMapper mapper = new ObjectMapper(); String newJsonData =
-		 * mapper.writerWithDefaultPrettyPrinter().writeValueAsString(list); //return
-		 * newJsonData; System.out.println(newJsonData);
-		 * 
-		 * //Map<String, Object> map = ls.from(list);
-		 * 
-		 * StructuredArgument sa = kv("jsonPayload", newJsonData);
-		 */
-		// LOGGER.info("info:jsonPayload"+newJsonData);
-		// System.out.println();
-
-		/*
-		 * List<Test> list = new ArrayList<>(); Test t = new Test("dsad", "dasd");
-		 * list.add(t); t = new Test("ddsadsad", "dasd"); list.add(t);
-		 * 
-		 * ObjectMapper objectMapper = new ObjectMapper(); try { String json =
-		 * objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(t);
-		 * System.out.println(json); } catch(Exception e) { e.printStackTrace(); }
-		 */
-
-		final List<Test> list = new ArrayList<Test>(2);
-		list.add(new Test("ddsadsad", "dasd"));
-		list.add(new Test("ddsadsdsdad", "dasd"));
-
-		System.out.println(ls.writeListToJsonArray(list));
-	}
 
 	/**
 	 * 

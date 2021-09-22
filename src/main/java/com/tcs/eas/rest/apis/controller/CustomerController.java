@@ -23,6 +23,7 @@ import com.tcs.eas.rest.apis.db.CustomerDaoService;
 import com.tcs.eas.rest.apis.exception.CustomerNotFound;
 import com.tcs.eas.rest.apis.log.LoggingService;
 import com.tcs.eas.rest.apis.model.Customer;
+import com.tcs.eas.rest.apis.utility.Utility;
 
 /**
  * 
@@ -54,24 +55,24 @@ public class CustomerController {
 		//CustomerEntity ce = test();
 		loggingService.writeProcessLog("POST", "customers", "createCustomer", customer);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{customerid}").buildAndExpand(savedCustomer.getCustomerid()).toUri();
-		return ResponseEntity.created(location).build();
+		return ResponseEntity.created(location).headers(Utility.getCustomResponseHeaders(headers)).build();
 	}
 	
 	@GetMapping("/customers")
 	public ResponseEntity<List<Customer>> getCustomers(@RequestHeader Map<String, String> headers) {
 		List<Customer> customers = customerDaoService.findAll();
 		loggingService.writeProcessLog("GET", "customers", "getCustomer", customers);
-		return  ResponseEntity.ok().body(customers);
+		return  ResponseEntity.ok().headers(Utility.getCustomResponseHeaders(headers)).body(customers);
 	}
 	
 	@GetMapping("/customers/{customerid}")
-	public Customer getCustomer(@PathVariable int customerid) {
-		Customer cust = customerDaoService.getCustomerById(customerid);
-		if(cust == null) {
+	public ResponseEntity<Customer> getCustomer(@PathVariable int customerid,@RequestHeader Map<String, String> headers) {
+		Customer customer = customerDaoService.getCustomerById(customerid);
+		if(customer == null) {
 			throw new CustomerNotFound("Customer id="+customerid);
 		}
-		loggingService.writeProcessLog("GET", "customers", "getCustomer by id", cust);
-		return cust;
+		loggingService.writeProcessLog("GET", "customers", "getCustomer by id", customer);
+		return ResponseEntity.ok().headers(Utility.getCustomResponseHeaders(headers)).body(customer);
 	}
 	
 	

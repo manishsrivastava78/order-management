@@ -1,7 +1,9 @@
 package com.tcs.eas.rest.apis.exception;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.tcs.eas.rest.apis.Constants;
+import com.tcs.eas.rest.apis.utility.Utility;
+
 /**
  * 
  * @author 44745
@@ -22,8 +27,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  */
 @ControllerAdvice
 @RestController
-public class CustomErrorHandler extends ResponseEntityExceptionHandler {
-	
+public class CustomErrorHandler extends ResponseEntityExceptionHandler implements Constants {
+
 	/**
 	 * 
 	 * @param ex
@@ -33,10 +38,9 @@ public class CustomErrorHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleAllException(Exception ex, WebRequest request) throws Exception {
-		ErrorResponse errorResponse = new ErrorResponse(new Date(), "Internal Error", "Internal Error");
-		return new ResponseEntity(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+		return getResponseEntity(request, HttpStatus.INTERNAL_SERVER_ERROR, ex,null);
 	}
-	
+
 	/**
 	 * 
 	 * @param ex
@@ -46,24 +50,35 @@ public class CustomErrorHandler extends ResponseEntityExceptionHandler {
 	 */
 	@ExceptionHandler(CustomerNotFound.class)
 	public ResponseEntity<Object> customerNotFoundException(Exception ex, WebRequest request) throws Exception {
-		ErrorResponse errorResponse = new ErrorResponse(new Date(), ex.getMessage(), request.getDescription(false));
-		return new ResponseEntity(errorResponse,HttpStatus.NOT_FOUND);
+		return getResponseEntity(request, HttpStatus.NOT_FOUND, ex,null);
 	}
-	
+
 	@ExceptionHandler(CustomerException.class)
 	public ResponseEntity<Object> customerNotFoundException1(Exception ex, WebRequest request) throws Exception {
-		ErrorResponse errorResponse = new ErrorResponse(new Date(), "Bad request", request.getDescription(false));
-		return new ResponseEntity(errorResponse,HttpStatus.BAD_REQUEST);
+		return getResponseEntity(request, HttpStatus.BAD_REQUEST, ex,null);
 	}
-	
+
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(
-			MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		BindingResult bindingResult = ex.getBindingResult();
 		List<ObjectError> errors = bindingResult.getAllErrors();
 		String errorMessage = errors.size()>0 ? errors.get(0).getDefaultMessage(): "error message not found";
-		ErrorResponse errorResponse = new ErrorResponse(new Date(), "Input validation failed",errorMessage);
-		return new ResponseEntity(errorResponse,HttpStatus.BAD_REQUEST);
+		return getResponseEntity(request, HttpStatus.BAD_REQUEST, ex,errorMessage);
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param httpStatus
+	 * @param ex
+	 * @return
+	 */
+	private ResponseEntity<Object> getResponseEntity(WebRequest request, HttpStatus httpStatus, Exception ex,String customErrorMessage) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(TRANSACTION_ID, request.getHeader(TRANSACTION_ID));
+		headers.put(CORRELATION_ID, request.getHeader(CORRELATION_ID));
+		ErrorResponse errorResponse = new ErrorResponse(new Date(), (customErrorMessage == null ? ex.getMessage():customErrorMessage), request.getDescription(false));
+		return new ResponseEntity<Object>(errorResponse, Utility.getCustomResponseHeaders(headers), httpStatus);
+	}
 }

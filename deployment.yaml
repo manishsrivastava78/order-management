@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oms
-  namespace: jenkins
+  namespace: app
   labels:
     app: oms
 spec:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: oms
-        image: manishsrivastavaggn/oms:changeMePlease
+        image: manishsrivastavaggn/oms-customer:1
         ports:
         - containerPort: 8080
         resources:
